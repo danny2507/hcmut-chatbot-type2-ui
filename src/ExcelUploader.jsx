@@ -54,11 +54,13 @@ const LecturersTablePreview = ({ departments, roleKeys }) => (
                                 <TableCell>{lec.last_middle_name || ''}</TableCell>
                                 <TableCell>{lec.first_name || ''}</TableCell>
                                 <TableCell>{lec.department || ''}</TableCell>
-                                <TableCell>{`${lec.degree || ''} ${lec.title || ''}`}</TableCell>
+                                <TableCell>{lec.title || lec.degree || ''}</TableCell>
                                 <TableCell>{lec.rank || ''}</TableCell>
-                                {roleKeys.map(role => (
-                                    <TableCell key={role}>{lec.roles[role] ? '1' : ''}</TableCell>
-                                ))}
+
+                                    <TableCell >{lec.kiem_nghiem ? '1' : ''}</TableCell>
+                                    <TableCell >{lec.bc ? '1' : ''}</TableCell>
+                                    <TableCell >{lec.hd_t ? '1' : ''}</TableCell>
+
                             </TableRow>
                         ))
                     )}
@@ -120,7 +122,9 @@ const ExcelUploader = ({ onDataProcessed }) => {
                         degree: null,
                         title: null,
                         rank: null,
-                        roles: roleKeys.reduce((acc, key) => ({ ...acc, [key]: 0 }), {})
+                        kiem_nghiem: null,
+                        bc: null,
+                        hd_t: null
                     };
 
                     let degreeCols = row.slice(5, 9);
@@ -141,11 +145,16 @@ const ExcelUploader = ({ onDataProcessed }) => {
                         lecturer.rank = rankMap[11 + rankIndices[0]];
                     }
 
-                    roleKeys.forEach((role, i) => {
-                        if (row[17 + i] === 1) {
-                            lecturer.roles[role] = 1;
+                        if (row[17] === 1) {
+                            lecturer.kiem_nghiem = 1;
                         }
-                    });
+                        if (row[18] === 1) {
+                            lecturer.bc = 1;
+                        }
+                        if (row[19] === 1) {
+                            lecturer.hd_t = 1;
+                        }
+
 
                     currentDepartment.lecturers.push(lecturer);
                 }
@@ -157,16 +166,42 @@ const ExcelUploader = ({ onDataProcessed }) => {
         reader.readAsArrayBuffer(file);
     };
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         setIsConfirmed(true);
-        // Randomly choose between success and error
-        const isSuccess = Math.random() > 0.5;
-        if (isSuccess) {
-            setUpdateMessage({
-                type: 'success',
-                text: 'Dữ liệu đã được cập nhật thành công. Cảm ơn bạn!'
+
+        // Prepare lecturer data matching the table structure exactly
+        const lecturerData = departments.flatMap(dept =>
+            dept.lecturers.map(lec => ({
+                id: lec.id || '',
+                last_middle_name: lec.last_middle_name || '',
+                first_name: lec.first_name || '',
+                department: lec.department || '',
+                academic_title: lec.title || lec.degree || '', // Matches table display logic
+                rank: lec.rank || '',
+                kiem_nghiem: lec.kiem_nghiem ? '1' : '',
+                bc: lec.bc ? '1' : '',
+                hd_t: lec.hd_t ? '1' : ''
+            }))
+        );
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/type2/update_cbnv_database', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(lecturerData)
             });
-        } else {
+
+            if (response.ok) {
+                setUpdateMessage({
+                    type: 'success',
+                    text: 'Dữ liệu đã được cập nhật thành công. Cảm ơn bạn!'
+                });
+            } else {
+                throw new Error('API request failed');
+            }
+        } catch (error) {
             setUpdateMessage({
                 type: 'error',
                 text: 'Rất tiếc, đã có lỗi xảy ra khi cập nhật dữ liệu. Vui lòng thử lại sau.'

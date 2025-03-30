@@ -67,7 +67,10 @@ export default function App() {
                 </Toolbar>
             </AppBar>
             <Container sx={{ mt: 4 }}>
-                <Typography variant="h5">Dữ liệu CBCNV</Typography>
+                <Typography variant="h4">Dữ liệu CBCNV</Typography>
+                <Typography variant="h5">Tải về file mẫu</Typography>
+
+                <Typography variant="h5">Cập nhật dữ liệu CBCNV</Typography>
                 <ExcelUploader onDataProcessed={handleDataProcessed} />
             </Container>
         </Box>
