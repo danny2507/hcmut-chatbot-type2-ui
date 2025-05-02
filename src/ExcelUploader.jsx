@@ -196,7 +196,7 @@ const ExcelUploader = ({ onDataProcessed }) => {
             if (response.ok) {
                 setUpdateMessage({
                     type: 'success',
-                    text: 'Dữ liệu đã được cập nhật thành công. Cảm ơn bạn!'
+                    text: 'Dữ liệu đã được cập nhật thành công.'
                 });
             } else {
                 throw new Error('API request failed');

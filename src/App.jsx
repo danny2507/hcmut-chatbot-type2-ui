@@ -12,9 +12,9 @@ import Toolbar from '@mui/material/Toolbar';
 import ExcelUploader from './ExcelUploader';
 
 export default function App() {
-    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-    const [username, setUsername] = React.useState('');
-    const [password, setPassword] = React.useState('');
+    const [isLoggedIn, setIsLoggedIn] = React.useState(true);
+    const [username, setUsername] = React.useState('admin');
+    const [password, setPassword] = React.useState('password123');
     const [error, setError] = React.useState('');
 
     const validUsername = 'admin';
@@ -63,13 +63,15 @@ export default function App() {
             <AppBar position="static" sx={{ bgcolor: '#1e2536' }}>
                 <Toolbar>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>Quản lý dữ liệu Type 2</Typography>
-                    <Button color="inherit" onClick={handleLogout}>Đăng xuất</Button>
+                    {/*<Button color="inherit" onClick={handleLogout}>Đăng xuất</Button>*/}
                 </Toolbar>
             </AppBar>
             <Container sx={{ mt: 4 }}>
                 <Typography variant="h4">Dữ liệu CBCNV</Typography>
                 <Typography variant="h5">Tải về file mẫu</Typography>
-
+                <Button variant="contained" target="_blank" component="a" href="https://docs.google.com/spreadsheets/d/17NOV-nC3ReH5aCxONxIrLCeoVW1ZfPaj/edit?usp=sharing&ouid=102398002596457783182&rtpof=true&sd=true">
+                Tải về file mẫu DanhsachCBCNV 01_2025.xlsx
+            </Button>
                 <Typography variant="h5">Cập nhật dữ liệu CBCNV</Typography>
                 <ExcelUploader onDataProcessed={handleDataProcessed} />
             </Container>
